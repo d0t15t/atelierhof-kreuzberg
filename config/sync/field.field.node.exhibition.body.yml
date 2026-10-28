@@ -11,7 +11,7 @@ id: node.exhibition.body
 field_name: body
 entity_type: node
 bundle: exhibition
-label: Body
+label: Text
 description: ''
 required: false
 translatable: true

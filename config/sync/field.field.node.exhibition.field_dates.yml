@@ -11,8 +11,8 @@ id: node.exhibition.field_dates
 field_name: field_dates
 entity_type: node
 bundle: exhibition
-label: Dates
-description: 'Set the start and end dates. This is importing for sorting.'
+label: Zeitraum
+description: 'Start- und Enddatum festlegen. Wichtig für die Sortierung.'
 required: true
 translatable: false
 default_value:

@@ -4,11 +4,14 @@ langcode: en
 applies_admin_routes: true
 include_invalid_paths: false
 excluded_paths: ''
-replaced_titles: ''
+replaced_titles: |-
+  Archive::Archiv
+  About Atelierhof Kreuzberg::Über den Atelierhof Kreuzberg
+  Artists::Künstler*innen
 custom_paths: ''
 include_home_segment: true
 alternative_title_field: field_breadcrumb_title
-home_segment_title: Home
+home_segment_title: Startseite
 home_segment_keep: true
 include_title_segment: true
 title_from_page_when_available: true
@@ -23,7 +26,7 @@ hide_single_home_item: false
 term_hierarchy: false
 use_site_title: false
 add_structured_data_json_ld: false
-capitalizator_mode: ucwords
+capitalizator_mode: none
 capitalizator_ignored_words:
   - of
   - and

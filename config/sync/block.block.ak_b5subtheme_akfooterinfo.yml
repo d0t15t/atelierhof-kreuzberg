@@ -16,7 +16,7 @@ provider: null
 plugin: 'block_content:4b60f217-8746-4af7-a68c-ffcd1c41e75e'
 settings:
   id: 'block_content:4b60f217-8746-4af7-a68c-ffcd1c41e75e'
-  label: 'AK Footer info'
+  label: AK-Fußzeileninfo
   label_display: '0'
   provider: block_content
   view_mode: full

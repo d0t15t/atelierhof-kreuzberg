@@ -10,7 +10,7 @@ id: node.exhibition.field_media_images
 field_name: field_media_images
 entity_type: node
 bundle: exhibition
-label: Images
+label: Bilder
 description: ''
 required: false
 translatable: false

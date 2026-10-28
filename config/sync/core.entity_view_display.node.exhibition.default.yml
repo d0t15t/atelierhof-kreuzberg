@@ -29,7 +29,7 @@ third_party_settings:
       -
         layout_id: layout_twocol_section
         layout_settings:
-          label: 'Main exhibition'
+          label: Hauptausstellung
           context_mapping: {  }
           column_widths: 33-67
         components:
@@ -38,7 +38,7 @@ third_party_settings:
             region: first
             configuration:
               id: 'field_block:node:exhibition:field_media_image'
-              label: 'Main image'
+              label: Hauptbild
               label_display: '0'
               provider: layout_builder
               context_mapping:
@@ -73,7 +73,7 @@ third_party_settings:
             region: second
             configuration:
               id: 'field_block:node:exhibition:field_title'
-              label: Title
+              label: Titel
               label_display: '0'
               provider: layout_builder
               context_mapping:
@@ -105,7 +105,7 @@ third_party_settings:
             region: second
             configuration:
               id: 'field_block:node:exhibition:body'
-              label: Body
+              label: Text
               label_display: '0'
               provider: layout_builder
               context_mapping:
@@ -136,7 +136,7 @@ third_party_settings:
             region: second
             configuration:
               id: 'field_block:node:exhibition:field_tags'
-              label: Artists
+              label: 'Künstler*innen'
               label_display: '0'
               provider: layout_builder
               context_mapping:
@@ -172,7 +172,7 @@ third_party_settings:
             region: second
             configuration:
               id: 'field_block:node:exhibition:field_media_images'
-              label: Images
+              label: Bilder
               label_display: '0'
               provider: layout_builder
               context_mapping:

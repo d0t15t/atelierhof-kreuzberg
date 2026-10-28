@@ -10,8 +10,8 @@ id: node.exhibition.field_media_image
 field_name: field_media_image
 entity_type: node
 bundle: exhibition
-label: 'Main image'
-description: 'Add a title image for this exhibition.'
+label: Hauptbild
+description: 'Titelbild für diese Ausstellung hinzufügen.'
 required: true
 translatable: false
 default_value: {  }

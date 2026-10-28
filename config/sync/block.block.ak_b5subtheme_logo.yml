@@ -14,7 +14,7 @@ provider: null
 plugin: system_branding_block
 settings:
   id: system_branding_block
-  label: 'AK Logo'
+  label: AK-Logo
   label_display: '0'
   provider: system
   use_site_logo: true

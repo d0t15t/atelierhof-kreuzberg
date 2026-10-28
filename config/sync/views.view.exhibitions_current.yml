@@ -10,7 +10,7 @@ dependencies:
     - node
     - user
 id: exhibitions_current
-label: 'Exhibitions current'
+label: 'Aktuelle Ausstellungen'
 module: views
 description: 'A list of current and upcoming exhibitions.'
 tag: ''
@@ -23,7 +23,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'Exhibitions current'
+      title: 'Aktuelle Ausstellungen'
       fields:
         title:
           id: title
@@ -266,7 +266,7 @@ display:
     display_plugin: block
     position: 1
     display_options:
-      title: Upcoming
+      title: Demnächst
       sorts:
         created:
           id: created

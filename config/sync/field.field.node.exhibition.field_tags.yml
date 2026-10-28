@@ -10,8 +10,8 @@ id: node.exhibition.field_tags
 field_name: field_tags
 entity_type: node
 bundle: exhibition
-label: Artists
-description: 'Tag the artists in this exhibition.'
+label: 'Künstler*innen'
+description: 'Die an dieser Ausstellung beteiligten Künstler*innen.'
 required: false
 translatable: false
 default_value: {  }

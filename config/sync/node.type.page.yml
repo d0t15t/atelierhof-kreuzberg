@@ -10,9 +10,9 @@ third_party_settings:
       - main
       - sidebar
     parent: 'main:'
-name: Page
+name: Seite
 type: page
-description: "Use <em>basic pages</em> for your static content, such as an 'About us' page."
+description: 'Für statische Inhalte, z. B. eine „Über uns“-Seite.'
 help: null
 new_revision: false
 preview_mode: 1

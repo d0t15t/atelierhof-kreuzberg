@@ -10,8 +10,8 @@ id: node.page.field_featured_exhibitions
 field_name: field_featured_exhibitions
 entity_type: node
 bundle: page
-label: 'Featured exhibitions'
-description: 'Exhibitions shown on this page, in this order. Drag to reorder.'
+label: 'Hervorgehobene Ausstellungen'
+description: 'Ausstellungen, die auf dieser Seite angezeigt werden, in dieser Reihenfolge. Zum Umsortieren ziehen.'
 required: false
 translatable: true
 default_value: {  }
