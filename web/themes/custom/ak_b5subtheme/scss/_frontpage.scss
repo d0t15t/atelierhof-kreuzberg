@@ -30,6 +30,27 @@
       font-size: medium;
     }
   }
+
+  .field--name-field-featured-exhibitions {
+    margin-top: calc($spacer / 2);
+  }
+
+  .field--name-field-featured-exhibitions > .field__item + .field__item {
+    margin-top: calc($spacer * 1.4);
+    padding-top: calc($spacer * 1.3);
+    border-top: 1px solid;
+  }
+}
+
+main .node--view-mode-featured .field--name-field-status {
+  font-size: small;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: calc($spacer / 4);
+
+  &, * {
+    color: $ak_color__2;
+  }
 }
 
 #block-ak-b5subtheme-ak-info {

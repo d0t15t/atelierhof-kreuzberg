@@ -20,7 +20,7 @@ ul.ak--list {
 }
 
 .node--type-exhibition {
-  &.node--view-mode-teaser {
+  &.node--view-mode-teaser, &.node--view-mode-featured {
     .field--name-field-media-image {
       img {
         width: 100%;
@@ -58,7 +58,7 @@ ul.ak--list {
 
 }
 @media screen and (min-width: 40em) {
-  .node--type-exhibition.node--view-mode-teaser, .node--type-exhibition.node--view-mode-full {
+  .node--type-exhibition.node--view-mode-teaser, .node--type-exhibition.node--view-mode-featured, .node--type-exhibition.node--view-mode-full {
     .layout--twocol-section.layout--twocol-section--33-67 > .layout__region--second {
       padding-left: calc($spacer / 1);
 
