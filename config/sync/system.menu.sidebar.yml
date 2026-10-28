@@ -3,6 +3,6 @@ langcode: en
 status: true
 dependencies: {  }
 id: sidebar
-label: Sidebar
-description: 'Links in the sidebar.'
+label: Seitenleiste
+description: 'Links in der Seitenleiste.'
 locked: false

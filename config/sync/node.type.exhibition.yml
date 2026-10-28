@@ -8,9 +8,9 @@ third_party_settings:
   menu_ui:
     available_menus: {  }
     parent: ''
-name: Exhibition
+name: Ausstellung
 type: exhibition
-description: 'Add information about an exhibition including text, dates, artists, and images.'
+description: 'Informationen zu einer Ausstellung mit Text, Daten, Künstler*innen und Bildern.'
 help: null
 new_revision: false
 preview_mode: 1

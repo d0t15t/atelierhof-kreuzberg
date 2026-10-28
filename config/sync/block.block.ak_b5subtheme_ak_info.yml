@@ -16,7 +16,7 @@ provider: null
 plugin: 'block_content:c29054fe-3f0c-4d79-ae6b-4df7776ff52b'
 settings:
   id: 'block_content:c29054fe-3f0c-4d79-ae6b-4df7776ff52b'
-  label: 'general information'
+  label: 'Allgemeine Informationen'
   label_display: '0'
   provider: block_content
   view_mode: full

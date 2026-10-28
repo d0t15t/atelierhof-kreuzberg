@@ -11,7 +11,7 @@ dependencies:
     - node
     - user
 id: exhibitions_archive
-label: 'Exhibitions archive'
+label: Ausstellungsarchiv
 module: views
 description: 'A list of exhibitions.'
 tag: ''
@@ -24,7 +24,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'Exhibitions archive'
+      title: Ausstellungsarchiv
       fields:
         title:
           id: title
@@ -82,10 +82,10 @@ display:
           total_pages: null
           id: 0
           tags:
-            next: 'Next ›'
-            previous: '‹ Previous'
-            first: '« First'
-            last: 'Last »'
+            next: 'Weiter ›'
+            previous: '‹ Zurück'
+            first: '« Erste'
+            last: 'Letzte »'
           expose:
             items_per_page: false
             items_per_page_label: 'Items per page'

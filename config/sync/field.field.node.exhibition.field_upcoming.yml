@@ -9,7 +9,7 @@ id: node.exhibition.field_upcoming
 field_name: field_upcoming
 entity_type: node
 bundle: exhibition
-label: Upcoming
+label: Demnächst
 description: ''
 required: false
 translatable: false

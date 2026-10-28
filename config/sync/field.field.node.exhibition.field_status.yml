@@ -11,7 +11,7 @@ field_name: field_status
 entity_type: node
 bundle: exhibition
 label: Status
-description: 'Optional. Shown as a label when the exhibition is featured on the frontpage.'
+description: 'Optional. Wird als Label angezeigt, wenn die Ausstellung auf der Startseite hervorgehoben ist.'
 required: false
 translatable: true
 default_value: {  }

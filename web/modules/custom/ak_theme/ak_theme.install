@@ -1,0 +1,248 @@
+<?php
+
+/**
+ * @file
+ * Install and update hooks for AK Theme module.
+ */
+
+use Drupal\block\Entity\Block;
+use Drupal\block_content\Entity\BlockContent;
+use Drupal\menu_link_content\Entity\MenuLinkContent;
+use Drupal\pathauto\PathautoState;
+use Drupal\taxonomy\Entity\Term;
+
+/**
+ * Translates the site's labels and config strings to German.
+ *
+ * Vocabulary names, node titles and path aliases are left alone: the term
+ * alias pattern is [term:vocabulary]/[term:name], so renaming a vocabulary
+ * would move every artist URL.
+ */
+function ak_theme_update_10001(): void {
+  $config_factory = \Drupal::configFactory();
+
+  // Placed blocks.
+  $blocks = [
+    'ak_b5subtheme_account_menu' => 'Benutzerkontomenü',
+    'ak_b5subtheme_ak_info' => 'Allgemeine Informationen',
+    'ak_b5subtheme_akfooterinfo' => 'AK-Fußzeileninfo',
+    'ak_b5subtheme_branding' => 'Website-Branding',
+    'ak_b5subtheme_breadcrumbs' => 'Pfadnavigation',
+    'ak_b5subtheme_content' => 'Hauptinhalt',
+    'ak_b5subtheme_footer' => 'Fußzeile',
+    'ak_b5subtheme_local_actions' => 'Primäre Admin-Aktionen',
+    'ak_b5subtheme_local_tasks' => 'Reiter',
+    'ak_b5subtheme_logo' => 'AK-Logo',
+    'ak_b5subtheme_main_navigation' => 'Hauptnavigation',
+    'ak_b5subtheme_mainmenu_sidebar' => 'Hauptmenü (Seitenleiste)',
+    'ak_b5subtheme_messages' => 'Meldungen',
+    'ak_b5subtheme_page_title' => 'Seitentitel',
+    'ak_b5subtheme_powered_by_drupal' => 'Betrieben mit Drupal',
+    'ak_b5subtheme_sidebar' => 'Seitenleiste',
+  ];
+  foreach (Block::loadMultiple(array_keys($blocks)) as $id => $block) {
+    $settings = $block->get('settings');
+    $settings['label'] = $blocks[$id];
+    $block->set('settings', $settings)->save();
+  }
+
+  // Custom block descriptions and the footer address block.
+  $block_content = [
+    1 => [
+      'info' => 'Allgemeine Informationen',
+      'body' => [
+        'Exhibition & Studio space' => 'Ausstellungs- & Atelierräume',
+        'Opening Hours' => 'Öffnungszeiten',
+        'Di-Fri 16:00-18:00' => 'Di–Fr 16:00–18:00 Uhr',
+        'And by appointment' => 'und nach Vereinbarung',
+      ],
+    ],
+    2 => ['info' => 'Jahresnavigation', 'body' => []],
+    3 => [
+      'info' => 'AK-Fußzeileninfo',
+      'body' => [
+        'All images &amp; information by Atelierhof Kreuzberg, 2008 -' => 'Alle Bilder &amp; Informationen: Atelierhof Kreuzberg, 2008 –',
+      ],
+    ],
+  ];
+  foreach (BlockContent::loadMultiple(array_keys($block_content)) as $id => $entity) {
+    $entity->set('info', $block_content[$id]['info']);
+    if ($block_content[$id]['body'] && !$entity->get('body')->isEmpty()) {
+      $entity->body->value = strtr($entity->body->value, $block_content[$id]['body']);
+    }
+    $entity->save();
+  }
+
+  // Menus and their links.
+  $menus = [
+    'main' => ['Hauptmenü', 'Die Hauptnavigation der Website.'],
+    'footer' => ['Fußzeile', 'Links zu Informationen über die Website.'],
+    'sidebar' => ['Seitenleiste', 'Links in der Seitenleiste.'],
+  ];
+  foreach ($menus as $id => [$label, $description]) {
+    $config_factory->getEditable("system.menu.$id")
+      ->set('label', $label)
+      ->set('description', $description)
+      ->save();
+  }
+  $link_titles = [
+    'About' => 'Über uns',
+    'Archive' => 'Archiv',
+    'Upcoming' => 'Demnächst',
+  ];
+  $link_descriptions = [
+    'An archive of exhibitions and events.' => 'Archiv der Ausstellungen und Veranstaltungen.',
+  ];
+  foreach (MenuLinkContent::loadMultiple() as $link) {
+    $title = $link->getTitle();
+    $description = $link->getDescription();
+    if (isset($link_titles[$title]) || isset($link_descriptions[$description])) {
+      $link->set('title', $link_titles[$title] ?? $title);
+      $link->set('description', $link_descriptions[$description] ?? $description);
+      $link->save();
+    }
+  }
+
+  // Breadcrumbs. Path segments without a page of their own are titled from
+  // the URL, which stays English. Titles keep their own case: English title
+  // case would capitalize every German word.
+  $config_factory->getEditable('easy_breadcrumb.settings')
+    ->set('home_segment_title', 'Startseite')
+    ->set('capitalizator_mode', 'none')
+    ->set('replaced_titles', "Archive::Archiv\nAbout Atelierhof Kreuzberg::Über den Atelierhof Kreuzberg\nArtists::Künstler*innen")
+    ->save();
+
+  // Views.
+  $pager_tags = [
+    'next' => 'Weiter ›',
+    'previous' => '‹ Zurück',
+    'first' => '« Erste',
+    'last' => 'Letzte »',
+  ];
+  $views = [
+    'exhibitions_archive' => [
+      'label' => 'Ausstellungsarchiv',
+      'titles' => ['default' => 'Ausstellungsarchiv', 'page_1' => 'Archiv'],
+    ],
+    'exhibitions_current' => [
+      'label' => 'Aktuelle Ausstellungen',
+      'titles' => [
+        'default' => 'Aktuelle Ausstellungen',
+        'block_current' => 'Laufende <span>Ausstellungen</span>',
+        'block_upcoming' => 'Demnächst',
+      ],
+    ],
+  ];
+  foreach ($views as $id => $info) {
+    $view = $config_factory->getEditable("views.view.$id");
+    $view->set('label', $info['label']);
+    foreach (array_keys($view->get('display')) as $display_id) {
+      $base = "display.$display_id.display_options";
+      if (isset($info['titles'][$display_id]) && $view->get("$base.title") !== NULL) {
+        $view->set("$base.title", $info['titles'][$display_id]);
+      }
+      if ($view->get("$base.pager.options.tags") !== NULL) {
+        $view->set("$base.pager.options.tags", $pager_tags + $view->get("$base.pager.options.tags"));
+      }
+    }
+    $view->save();
+  }
+
+  // Exhibition status labels shown on the frontpage cards. Skip pathauto so
+  // the terms keep their aliases.
+  $terms = [
+    'Upcoming' => 'Demnächst',
+    'Ongoing' => 'Laufend',
+  ];
+  $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  foreach ($storage->loadByProperties(['vid' => 'exhibition_status']) as $term) {
+    /** @var \Drupal\taxonomy\TermInterface $term */
+    if (isset($terms[$term->getName()])) {
+      $term->setName($terms[$term->getName()]);
+      if ($term->hasField('path')) {
+        $term->path->pathauto = PathautoState::SKIP;
+      }
+      $term->save();
+    }
+  }
+
+  // Vocabulary descriptions (not names, see above).
+  $vocabularies = [
+    'exhibition_status' => 'Optionales Label für hervorgehobene Ausstellungen, z. B. Demnächst oder Laufend.',
+    'tags' => 'Künstler*innen, die an Ausstellungen beteiligt sind.',
+    'type' => 'Art des Beitrags, z. B. Ausstellung oder Neuigkeit.',
+  ];
+  foreach ($vocabularies as $id => $description) {
+    $config_factory->getEditable("taxonomy.vocabulary.$id")->set('description', $description)->save();
+  }
+
+  // Content types and the field labels on the edit forms.
+  $node_types = [
+    'exhibition' => ['Ausstellung', 'Informationen zu einer Ausstellung mit Text, Daten, Künstler*innen und Bildern.'],
+    'page' => ['Seite', 'Für statische Inhalte, z. B. eine „Über uns“-Seite.'],
+  ];
+  foreach ($node_types as $id => [$name, $description]) {
+    $config_factory->getEditable("node.type.$id")
+      ->set('name', $name)
+      ->set('description', $description)
+      ->save();
+  }
+  $fields = [
+    'node.exhibition.body' => ['Text'],
+    'node.exhibition.field_dates' => ['Zeitraum', 'Start- und Enddatum festlegen. Wichtig für die Sortierung.'],
+    'node.exhibition.field_import_reference' => ['Import-Referenz'],
+    'node.exhibition.field_media_image' => ['Hauptbild', 'Titelbild für diese Ausstellung hinzufügen.'],
+    'node.exhibition.field_media_images' => ['Bilder'],
+    'node.exhibition.field_status' => ['Status', 'Optional. Wird als Label angezeigt, wenn die Ausstellung auf der Startseite hervorgehoben ist.'],
+    'node.exhibition.field_tags' => ['Künstler*innen', 'Die an dieser Ausstellung beteiligten Künstler*innen.'],
+    'node.exhibition.field_title' => ['Titel', 'Titel festlegen.'],
+    'node.exhibition.field_upcoming' => ['Demnächst'],
+    'node.page.body' => ['Text'],
+    'node.page.field_featured_exhibitions' => ['Hervorgehobene Ausstellungen', 'Ausstellungen, die auf dieser Seite angezeigt werden, in dieser Reihenfolge. Zum Umsortieren ziehen.'],
+    'node.page.field_image' => ['Bild'],
+    'node.page.field_title' => ['Titel', 'Titel festlegen.'],
+  ];
+  foreach ($fields as $id => $strings) {
+    $field = $config_factory->getEditable("field.field.$id");
+    if ($field->isNew()) {
+      continue;
+    }
+    $field->set('label', $strings[0]);
+    if (isset($strings[1])) {
+      $field->set('description', $strings[1]);
+    }
+    $field->save();
+  }
+
+  // Block and section labels in the Layout Builder displays.
+  $layout_labels = [
+    'Main image' => 'Hauptbild',
+    'Artists' => 'Künstler*innen',
+    'Body' => 'Text',
+    'Images' => 'Bilder',
+    'Links' => 'Links',
+    'Status' => 'Status',
+    'Title' => 'Titel',
+    '2 col 33/67' => '2 Spalten 33/67',
+    'Main exhibition' => 'Hauptausstellung',
+  ];
+  foreach ($config_factory->listAll('core.entity_view_display.') as $name) {
+    $display = $config_factory->getEditable($name);
+    $sections = $display->get('third_party_settings.layout_builder.sections');
+    if (!$sections) {
+      continue;
+    }
+    foreach ($sections as &$section) {
+      if (isset($section['layout_settings']['label'], $layout_labels[$section['layout_settings']['label']])) {
+        $section['layout_settings']['label'] = $layout_labels[$section['layout_settings']['label']];
+      }
+      foreach ($section['components'] as &$component) {
+        if (isset($component['configuration']['label'], $layout_labels[$component['configuration']['label']])) {
+          $component['configuration']['label'] = $layout_labels[$component['configuration']['label']];
+        }
+      }
+    }
+    unset($section, $component);
+    $display->set('third_party_settings.layout_builder.sections', $sections)->save();
+  }
+}

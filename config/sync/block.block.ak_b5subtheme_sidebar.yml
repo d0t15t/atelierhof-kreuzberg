@@ -16,7 +16,7 @@ provider: null
 plugin: 'system_menu_block:sidebar'
 settings:
   id: 'system_menu_block:sidebar'
-  label: Sidebar
+  label: Seitenleiste
   label_display: '0'
   provider: system
   level: 1

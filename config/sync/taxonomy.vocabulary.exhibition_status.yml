@@ -4,6 +4,6 @@ status: true
 dependencies: {  }
 name: 'Exhibition status'
 vid: exhibition_status
-description: 'Optional label shown on featured exhibitions, e.g. Upcoming or Ongoing.'
+description: 'Optionales Label für hervorgehobene Ausstellungen, z. B. Demnächst oder Laufend.'
 weight: 0
 new_revision: false

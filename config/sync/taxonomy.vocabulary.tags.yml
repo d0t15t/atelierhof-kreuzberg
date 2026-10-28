@@ -4,6 +4,6 @@ status: true
 dependencies: {  }
 name: Artists
 vid: tags
-description: 'Use tags to group articles on similar topics into categories.'
+description: 'Künstler*innen, die an Ausstellungen beteiligt sind.'
 weight: 0
 new_revision: false

@@ -4,6 +4,6 @@ status: true
 dependencies: {  }
 name: Type
 vid: type
-description: 'Is this post an exhibition, news, etc.'
+description: 'Art des Beitrags, z. B. Ausstellung oder Neuigkeit.'
 weight: 0
 new_revision: false

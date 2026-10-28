@@ -1,0 +1,5 @@
+services:
+  ak_theme.german_interface_strings:
+    class: Drupal\ak_theme\StringTranslation\GermanInterfaceStrings
+    tags:
+      - { name: string_translator, priority: 40 }
