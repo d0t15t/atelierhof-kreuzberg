@@ -142,15 +142,20 @@ foreach ($section->getComponents() as $uuid => $component) {
     $section->removeComponent($uuid);
   }
 }
+// The breadcrumb shows "Aktuell" (see easy_breadcrumb below), so the field
+// block's own label stays hidden.
 $has_field = FALSE;
 foreach ($section->getComponents() as $component) {
-  $has_field = $has_field || $component->getPluginId() === 'field_block:node:page:field_featured_exhibitions';
+  if ($component->getPluginId() === 'field_block:node:page:field_featured_exhibitions') {
+    $has_field = TRUE;
+    $component->setConfiguration(['label_display' => '0'] + $component->get('configuration'));
+  }
 }
 if (!$has_field) {
   $section->appendComponent(new SectionComponent(\Drupal::service('uuid')->generate(), 'content', [
     'id' => 'field_block:node:page:field_featured_exhibitions',
     'label' => 'Aktuell',
-    'label_display' => 'visible',
+    'label_display' => '0',
     'provider' => 'layout_builder',
     'context_mapping' => ['entity' => 'layout_builder.entity', 'view_mode' => 'view_mode'],
     'formatter' => [
@@ -162,6 +167,10 @@ if (!$has_field) {
   ]));
 }
 $front->save();
+
+// Keep the home segment on the frontpage, where the theme relabels it
+// "Aktuell" (ak_b5subtheme_preprocess_breadcrumb()).
+\Drupal::configFactory()->getEditable('easy_breadcrumb.settings')->set('home_segment_keep', TRUE)->save();
 
 // Menu: "Ongoing" becomes "Aktuell"; the "Upcoming" anchor has no section any more.
 $link = MenuLinkContent::load(477);
