@@ -1,0 +1,28 @@
+uuid: 3a903372-75be-4c77-9a05-09401ac3274c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_featured_exhibitions
+    - node.type.exhibition
+    - node.type.page
+id: node.page.field_featured_exhibitions
+field_name: field_featured_exhibitions
+entity_type: node
+bundle: page
+label: 'Featured exhibitions'
+description: 'Exhibitions shown on this page, in this order. Drag to reorder.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      exhibition: exhibition
+    sort:
+      field: created
+      direction: DESC
+    auto_create: false
+field_type: entity_reference

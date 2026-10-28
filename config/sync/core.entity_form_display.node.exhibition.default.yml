@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.exhibition.field_import_reference
     - field.field.node.exhibition.field_media_image
     - field.field.node.exhibition.field_media_images
+    - field.field.node.exhibition.field_status
     - field.field.node.exhibition.field_tags
     - field.field.node.exhibition.field_title
     - field.field.node.exhibition.field_upcoming
@@ -142,6 +143,12 @@ content:
     settings:
       media_types: {  }
     third_party_settings: {  }
+  field_status:
+    type: options_select
+    weight: -1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_tags:
     type: entity_reference_autocomplete
     weight: 11
@@ -192,6 +199,11 @@ content:
       permission_based: false
       allow_user_settings: true
       hide_revision: false
+    third_party_settings: {  }
+  simple_sitemap:
+    weight: 10
+    region: content
+    settings: {  }
     third_party_settings: {  }
   status:
     type: boolean_checkbox
