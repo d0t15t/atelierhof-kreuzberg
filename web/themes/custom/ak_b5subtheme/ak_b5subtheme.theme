@@ -35,7 +35,7 @@ function ak_b5subtheme_preprocess_breadcrumb(&$vars) {
   /** @var \Drupal\Core\Path\PathMatcherInterface $path_matcher */
   $path_matcher = \Drupal::service('path.matcher');
   if ($path_matcher->isFrontPage()) {
-    $vars["breadcrumb"][0]["text"] = t('Ongoing');
+    $vars["breadcrumb"][0]["text"] = t('Aktuell');
   }
 
   /** @var Node $cur_node */

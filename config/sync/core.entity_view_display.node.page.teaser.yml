@@ -5,6 +5,7 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.page.body
+    - field.field.node.page.field_featured_exhibitions
     - field.field.node.page.field_image
     - field.field.node.page.field_title
     - field.field.node.page.layout_builder__layout
@@ -54,5 +55,6 @@ content:
     weight: 100
     region: content
 hidden:
+  field_featured_exhibitions: true
   field_image: true
   layout_builder__layout: true

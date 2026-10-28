@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.exhibition.field_import_reference
     - field.field.node.exhibition.field_media_image
     - field.field.node.exhibition.field_media_images
+    - field.field.node.exhibition.field_status
     - field.field.node.exhibition.field_tags
     - field.field.node.exhibition.field_title
     - field.field.node.exhibition.field_upcoming
@@ -161,6 +162,7 @@ hidden:
   field_dates: true
   field_import_reference: true
   field_media_images: true
+  field_status: true
   field_tags: true
   field_title: true
   field_upcoming: true
