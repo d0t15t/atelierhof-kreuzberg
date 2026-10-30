@@ -1,0 +1,16 @@
+uuid: 829d82e1-d9f8-474a-87d0-544278f1d166
+langcode: de
+status: true
+dependencies:
+  config:
+    - node.type.exhibition
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: node.exhibition
+target_entity_type_id: node
+target_bundle: exhibition
+default_langcode: site_default
+language_alterable: true

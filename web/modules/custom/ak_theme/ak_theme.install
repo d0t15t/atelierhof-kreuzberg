@@ -7,6 +7,10 @@
 
 use Drupal\block\Entity\Block;
 use Drupal\block_content\Entity\BlockContent;
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\language\Entity\ConfigurableLanguage;
+use Drupal\language\Entity\ContentLanguageSettings;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\pathauto\PathautoState;
 use Drupal\taxonomy\Entity\Term;
@@ -244,5 +248,298 @@ function ak_theme_update_10001(): void {
     }
     unset($section, $component);
     $display->set('third_party_settings.layout_builder.sections', $sections)->save();
+  }
+}
+
+/**
+ * Makes the site bilingual: German by default, English under /en.
+ *
+ * Existing content and its URL aliases are marked German, which they are.
+ * German URLs get German words (/archiv, /kuenstler, /ueber-uns); every old
+ * URL redirects to its new one with a 301. The labels ak_theme_update_10001() translated in place
+ * become German config with English translations.
+ */
+function ak_theme_update_10002(): void {
+  \Drupal::service('module_installer')->install([
+    'language',
+    'locale',
+    'content_translation',
+    'config_translation',
+    'redirect',
+  ]);
+
+  // Languages.
+  if (!ConfigurableLanguage::load('de')) {
+    ConfigurableLanguage::createFromLangcode('de')->save();
+  }
+  ConfigurableLanguage::load('de')->setWeight(0)->save();
+  ConfigurableLanguage::load('en')->setWeight(1)->save();
+  $config_factory = \Drupal::configFactory();
+  $config_factory->getEditable('system.site')->set('default_langcode', 'de')->save();
+  $config_factory->getEditable('language.negotiation')
+    ->set('url.source', 'path_prefix')
+    ->set('url.prefixes', ['de' => '', 'en' => 'en'])
+    ->save();
+  // The html lang attribute now follows the page's language.
+  $config_factory->getEditable('ibase_seo.settings')->set('content_langcode', '')->save();
+
+  // Mark existing content German. There is no API for changing an entity's
+  // language, so rewrite the langcode columns of every table.
+  $database = \Drupal::database();
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $entity_types = ['node', 'taxonomy_term', 'menu_link_content', 'block_content'];
+  foreach ($entity_types as $entity_type_id) {
+    $storage = $entity_type_manager->getStorage($entity_type_id);
+    foreach ($storage->getTableMapping()->getTableNames() as $table) {
+      if ($database->schema()->tableExists($table) && $database->schema()->fieldExists($table, 'langcode')) {
+        $database->update($table)
+          ->fields(['langcode' => 'de'])
+          ->condition('langcode', ['en', 'und'], 'IN')
+          ->execute();
+      }
+    }
+    $storage->resetCache();
+  }
+  // Aliases follow their content. Language-neutral aliases would be shared
+  // by all translations, and pathauto would rewrite the German URL whenever a
+  // translation is saved.
+  foreach (['path_alias', 'path_alias_revision'] as $table) {
+    $database->update($table)
+      ->fields(['langcode' => 'de'])
+      ->condition('langcode', ['en', 'und'], 'IN')
+      ->condition($database->condition('OR')
+        ->condition('path', '/node/%', 'LIKE')
+        ->condition('path', '/taxonomy/term/%', 'LIKE'))
+      ->execute();
+  }
+  $entity_type_manager->getStorage('path_alias')->resetCache();
+  \Drupal::service('path_alias.manager')->cacheClear();
+
+  // Translatable content. Dates, images and references are shared between
+  // the languages; the frontpage layout has to be.
+  $bundles = [
+    'node' => ['exhibition', 'page'],
+    'taxonomy_term' => ['tags', 'exhibition_status'],
+    'menu_link_content' => ['menu_link_content'],
+    'block_content' => ['basic'],
+  ];
+  foreach ($bundles as $entity_type_id => $bundle_ids) {
+    foreach ($bundle_ids as $bundle) {
+      ContentLanguageSettings::loadByEntityTypeBundle($entity_type_id, $bundle)
+        ->setDefaultLangcode(LanguageInterface::LANGCODE_SITE_DEFAULT)
+        ->setLanguageAlterable(TRUE)
+        ->setThirdPartySetting('content_translation', 'enabled', TRUE)
+        ->save();
+    }
+  }
+  $shared_fields = [
+    'node.exhibition.field_dates',
+    'node.exhibition.field_import_reference',
+    'node.exhibition.field_media_image',
+    'node.exhibition.field_media_images',
+    'node.exhibition.field_status',
+    'node.exhibition.field_tags',
+    'node.exhibition.field_upcoming',
+    'node.page.field_featured_exhibitions',
+    'node.page.field_image',
+    'node.page.layout_builder__layout',
+  ];
+  foreach (FieldConfig::loadMultiple($shared_fields) as $field) {
+    $field->setTranslatable(FALSE)->save();
+  }
+  \Drupal::service('router.builder')->setRebuildNeeded();
+
+  // Breadcrumb segments without a page of their own are titled from the URL.
+  $config_factory->getEditable('easy_breadcrumb.settings')
+    ->set('replaced_titles', "Kuenstler::Künstler*innen\nAusstellungsstatus::Ausstellungsstatus")
+    ->save();
+
+  // URL patterns per language.
+  $pattern_storage = $entity_type_manager->getStorage('pathauto_pattern');
+  $patterns = [
+    'content_label_pattern' => ['node', 'exhibition', 'de', 'archiv/[node:title]', 'Ausstellung (Deutsch)'],
+    'exhibition_en' => ['node', 'exhibition', 'en', 'archive/[node:title]', 'Exhibition (English)'],
+    'artists_de' => ['taxonomy_term', 'tags', 'de', 'kuenstler/[term:name]', 'Künstler*innen (Deutsch)'],
+    'artists_en' => ['taxonomy_term', 'tags', 'en', 'artists/[term:name]', 'Artists (English)'],
+    'exhibition_status_de' => ['taxonomy_term', 'exhibition_status', 'de', 'ausstellungsstatus/[term:name]', 'Ausstellungsstatus (Deutsch)'],
+    'exhibition_status_en' => ['taxonomy_term', 'exhibition_status', 'en', 'exhibition-status/[term:name]', 'Exhibition status (English)'],
+  ];
+  foreach ($patterns as $id => [$entity_type_id, $bundle, $langcode, $path, $label]) {
+    /** @var \Drupal\pathauto\PathautoPatternInterface $pattern */
+    $pattern = $pattern_storage->load($id) ?: $pattern_storage->create([
+      'id' => $id,
+      'type' => "canonical_entities:$entity_type_id",
+      'weight' => -5,
+    ]);
+    foreach ($pattern->getSelectionConditions() as $condition_id => $condition) {
+      $pattern->removeSelectionCondition($condition_id);
+    }
+    $context = $entity_type_id === 'node' ? 'node' : 'taxonomy_term';
+    $pattern->set('label', $label)->setPattern($path);
+    $pattern->addSelectionCondition([
+      'id' => "entity_bundle:$entity_type_id",
+      'bundles' => [$bundle => $bundle],
+      'negate' => FALSE,
+      'context_mapping' => [$context => $context],
+    ]);
+    $pattern->addSelectionCondition([
+      'id' => 'language',
+      'langcodes' => [$langcode => $langcode],
+      'negate' => FALSE,
+      'context_mapping' => ['language' => "$context:langcode:language"],
+    ]);
+    $pattern->addRelationship("$context:langcode:language", 'Language');
+    $pattern->save();
+  }
+
+  // German titles for the frontpage and the archive, with the old English
+  // ones as their translations. German URLs; the redirect module turns each
+  // replaced alias into a 301.
+  $pages = [
+    277 => [
+      'de' => ['Aktuelle Ausstellungen im Atelierhof Kreuzberg', '/aktuell'],
+      'en' => ['Current exhibitions at Atelierhof Kreuzberg', '/current-exhibitions'],
+    ],
+    768 => [
+      'de' => ['Archiv', '/archiv'],
+      'en' => ['Archive', '/archive'],
+      'body' => ['Browse our archive of exhibitions and events.' => 'Stöbern Sie im Archiv unserer Ausstellungen und Veranstaltungen.'],
+    ],
+    1 => [
+      'de' => ['Über den Atelierhof Kreuzberg', '/ueber-uns'],
+    ],
+  ];
+  $node_storage = $entity_type_manager->getStorage('node');
+  foreach ($node_storage->loadMultiple(array_keys($pages)) as $id => $node) {
+    /** @var \Drupal\node\NodeInterface $node */
+    $english_body = $node->body->value;
+    [$title, $alias] = $pages[$id]['de'];
+    $node->setTitle($title);
+    $node->set('field_title', $title);
+    if (isset($pages[$id]['body']) && !$node->get('body')->isEmpty()) {
+      $node->body->value = strtr($node->body->value, $pages[$id]['body']);
+    }
+    $node->path->alias = $alias;
+    $node->path->pathauto = PathautoState::SKIP;
+    $node->save();
+    if (isset($pages[$id]['en']) && !$node->hasTranslation('en')) {
+      [$title, $alias] = $pages[$id]['en'];
+      $translation = $node->addTranslation('en', [
+        'title' => $title,
+        'field_title' => $title,
+        'body' => $node->get('body')->isEmpty() ? [] : ['value' => $english_body, 'format' => $node->body->format],
+      ]);
+      $translation->path->alias = $alias;
+      $translation->path->pathauto = PathautoState::SKIP;
+      $translation->save();
+    }
+  }
+
+  // German aliases for exhibitions, artists and status terms.
+  $generator = \Drupal::service('pathauto.generator');
+  foreach ($node_storage->loadByProperties(['type' => 'exhibition']) as $node) {
+    $generator->updateEntityAlias($node, 'bulkupdate', ['force' => TRUE]);
+  }
+  $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+  foreach ($term_storage->loadByProperties(['vid' => ['tags', 'exhibition_status']]) as $term) {
+    foreach ($term->getTranslationLanguages() as $language) {
+      $generator->updateEntityAlias($term->getTranslation($language->getId()), 'bulkupdate', ['force' => TRUE]);
+    }
+  }
+
+  // Config translated in place by 10001: German config, English translation.
+  $language_manager = \Drupal::languageManager();
+  $german = [
+    'views.view.exhibitions_archive' => ['display.page.display_options.menu.title' => 'Archiv'],
+    'views.view.exhibitions_current' => ['display.block_default.display_options.title' => 'Laufende <span>Ausstellungen</span>'],
+  ];
+  foreach (require __DIR__ . '/translations/config.en.php' as $name => $values) {
+    $config = $config_factory->getEditable($name);
+    if ($config->isNew()) {
+      continue;
+    }
+    $config->set('langcode', 'de');
+    foreach ($german[$name] ?? [] as $key => $value) {
+      $config->set($key, $value);
+    }
+    $config->save();
+    $override = $language_manager->getLanguageConfigOverride('en', $name);
+    foreach ($values as $key => $value) {
+      $override->set($key, $value);
+    }
+    $override->save();
+  }
+
+  // English versions of the labels that live in content.
+  $menu_links = [
+    464 => ['About'],
+    477 => ['Current', 'Current exhibitions at Atelierhof Kreuzberg.'],
+    478 => ['Upcoming'],
+    480 => ['Archive', 'An archive of exhibitions and events.'],
+  ];
+  foreach (MenuLinkContent::loadMultiple(array_keys($menu_links)) as $id => $link) {
+    if (!$link->hasTranslation('en')) {
+      $link->addTranslation('en', [
+        'title' => $menu_links[$id][0],
+        'description' => $menu_links[$id][1] ?? NULL,
+      ])->save();
+    }
+  }
+  $terms = ['Demnächst' => 'Upcoming', 'Laufend' => 'Ongoing'];
+  foreach ($entity_type_manager->getStorage('taxonomy_term')->loadByProperties(['vid' => 'exhibition_status']) as $term) {
+    if (isset($terms[$term->getName()]) && !$term->hasTranslation('en')) {
+      $translation = $term->addTranslation('en', ['name' => $terms[$term->getName()]]);
+      $translation->path->pathauto = PathautoState::CREATE;
+      $translation->save();
+    }
+  }
+  $block_content = [
+    1 => [
+      'Ausstellungs- & Atelierräume' => 'Exhibition & studio space',
+      'Öffnungszeiten' => 'Opening hours',
+      'Di–Fr 16:00–18:00 Uhr' => 'Tue–Fri 4–6 pm',
+      'und nach Vereinbarung' => 'and by appointment',
+      'Telefon:' => 'Phone:',
+    ],
+    3 => [
+      'Alle Bilder &amp; Informationen: Atelierhof Kreuzberg, 2008 –' => 'All images &amp; information: Atelierhof Kreuzberg, 2008 –',
+    ],
+  ];
+  foreach (BlockContent::loadMultiple(array_keys($block_content)) as $id => $entity) {
+    if (!$entity->hasTranslation('en')) {
+      $entity->addTranslation('en', [
+        'info' => $entity->label(),
+        'body' => [
+          'value' => strtr($entity->body->value, $block_content[$id]),
+          'format' => $entity->body->format,
+        ],
+      ])->save();
+    }
+  }
+
+  // Address before menu in the sidebar, whatever the block labels' language.
+  foreach (['ak_b5subtheme_ak_info' => -1, 'ak_b5subtheme_mainmenu_sidebar' => 1] as $id => $weight) {
+    Block::load($id)?->setWeight($weight)->save();
+  }
+
+  // Language switcher, top right of the header.
+  if (!Block::load('ak_b5subtheme_languageswitcher')) {
+    Block::create([
+      'id' => 'ak_b5subtheme_languageswitcher',
+      'theme' => 'ak_b5subtheme',
+      'region' => 'header',
+      'weight' => 0,
+      'plugin' => 'language_block:language_interface',
+      'settings' => [
+        'id' => 'language_block:language_interface',
+        'label' => 'Sprachauswahl',
+        'label_display' => '0',
+        'provider' => 'language',
+      ],
+      'visibility' => [],
+    ])->save();
+    $language_manager->getLanguageConfigOverride('en', 'block.block.ak_b5subtheme_languageswitcher')
+      ->set('settings.label', 'Language switcher')
+      ->save();
   }
 }

@@ -1,5 +1,5 @@
 uuid: fb4e0687-7b2f-4a23-ad78-ab2b8d636e23
-langcode: en
+langcode: de
 status: true
 dependencies:
   config:
@@ -275,3 +275,4 @@ hidden:
   field_import_reference: true
   field_status: true
   field_upcoming: true
+  langcode: true

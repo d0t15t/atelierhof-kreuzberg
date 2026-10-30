@@ -1,5 +1,5 @@
 uuid: 3a903372-75be-4c77-9a05-09401ac3274c
-langcode: en
+langcode: de
 status: true
 dependencies:
   config:
@@ -13,7 +13,7 @@ bundle: page
 label: 'Hervorgehobene Ausstellungen'
 description: 'Ausstellungen, die auf dieser Seite angezeigt werden, in dieser Reihenfolge. Zum Umsortieren ziehen.'
 required: false
-translatable: true
+translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:

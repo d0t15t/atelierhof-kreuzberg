@@ -1,5 +1,5 @@
 uuid: f14784f5-8b27-4daa-93c7-71e0c357e5ef
-langcode: en
+langcode: de
 status: true
 dependencies:
   config:
@@ -247,7 +247,7 @@ display:
     display_plugin: block
     position: 1
     display_options:
-      title: 'Ongoing <span>Exhibitions</span>'
+      title: 'Laufende <span>Ausstellungen</span>'
       defaults:
         title: false
       display_description: 'A list of current exhibitions.'

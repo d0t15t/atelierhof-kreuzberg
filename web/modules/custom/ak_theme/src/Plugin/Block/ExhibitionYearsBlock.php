@@ -100,7 +100,7 @@ class ExhibitionYearsBlock extends BlockBase implements ContainerFactoryPluginIn
         'uri' => $url->setOption('query', ['y' => $y])->toString(),
         'current' => $y === $current_year,
       ], $results),
-      '#title' => t('Ausstellungen nach Jahr filtern'),
+      '#title' => t('Filter exhibitions by year'),
       '#current' => $current_year,
     ];
   }

@@ -1,5 +1,5 @@
 uuid: 3fa86a45-d774-4f80-a425-3517e910ca16
-langcode: en
+langcode: de
 status: true
 dependencies:
   config:
@@ -214,4 +214,5 @@ hidden:
   field_tags: true
   field_title: true
   field_upcoming: true
+  langcode: true
   links: true

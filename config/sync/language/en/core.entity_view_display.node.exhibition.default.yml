@@ -1,0 +1,22 @@
+third_party_settings:
+  layout_builder:
+    sections:
+      -
+        layout_settings:
+          label: 'Main exhibition'
+        components:
+          4d31cfe2-6f8a-4756-a977-3dea67a5edff:
+            configuration:
+              label: 'Main image'
+          68b4c432-81b3-4117-a911-738683e05f9d:
+            configuration:
+              label: Title
+          ead6820b-e161-4023-b25f-d5939c1d2d1f:
+            configuration:
+              label: Body
+          f2371d18-87d9-4e92-b1bd-65a2230d0b44:
+            configuration:
+              label: Artists
+          58ee2440-720b-45bf-bfbe-9e250598b5b0:
+            configuration:
+              label: Images

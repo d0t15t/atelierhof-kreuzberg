@@ -1,0 +1,16 @@
+label: 'Exhibitions archive'
+display:
+  default:
+    display_options:
+      title: 'Exhibitions archive'
+      pager:
+        options:
+          tags:
+            next: 'Next ›'
+            previous: '‹ Previous'
+            first: '« First'
+            last: 'Last »'
+  page:
+    display_options:
+      menu:
+        title: Archive

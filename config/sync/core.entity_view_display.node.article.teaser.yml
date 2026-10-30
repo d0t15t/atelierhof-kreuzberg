@@ -54,3 +54,4 @@ hidden:
   field_tags: true
   field_type: true
   field_weight: true
+  langcode: true

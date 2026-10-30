@@ -59,3 +59,4 @@ hidden:
   field_location: true
   field_type: true
   field_weight: true
+  langcode: true
