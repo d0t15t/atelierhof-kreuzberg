@@ -51,6 +51,7 @@
         "drupal/pub_options": "^3.0",
         "drupal/quick_node_clone": "*",
         "drupal/rabbit_hole": "^1.0@beta",
+        "drupal/redirect": "^1.13",
         "drupal/simple_sitemap": "^4.2",
         "drupal/taxonomy_menu_ui": "^3.0",
         "drupal/telephone": "^1.0",

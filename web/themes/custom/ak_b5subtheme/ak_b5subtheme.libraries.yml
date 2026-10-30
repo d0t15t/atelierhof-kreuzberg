@@ -5,6 +5,7 @@ global-styling:
     component:
       css/components/footer.css:
         weight: -10
+      css/components/language-switcher.css: {}
   js:
     js/akb5.js: {}
 

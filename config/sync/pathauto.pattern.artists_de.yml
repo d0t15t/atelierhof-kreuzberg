@@ -1,0 +1,33 @@
+uuid: f1113327-5ee2-4cf0-ae4d-f2e030ebf492
+langcode: de
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.tags
+  module:
+    - language
+    - taxonomy
+id: artists_de
+label: 'Künstler*innen (Deutsch)'
+type: 'canonical_entities:taxonomy_term'
+pattern: '/kuenstler/[term:name]'
+selection_criteria:
+  6ad9a551-f62b-4002-bb0c-5f47443fd44c:
+    id: 'entity_bundle:taxonomy_term'
+    negate: false
+    context_mapping:
+      taxonomy_term: taxonomy_term
+    bundles:
+      tags: tags
+  268bb174-da74-4e0a-94ba-b42f25730484:
+    id: language
+    negate: false
+    context_mapping:
+      language: 'taxonomy_term:langcode:language'
+    langcodes:
+      de: de
+selection_logic: and
+weight: -5
+relationships:
+  'taxonomy_term:langcode:language':
+    label: Language

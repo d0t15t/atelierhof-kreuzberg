@@ -29,7 +29,7 @@ organization:
     - 'Offene Ateliers'
 place: 'in Berlin-Kreuzberg'
 place_de: 'in Berlin-Kreuzberg'
-content_langcode: de
+content_langcode: ''
 redirect_imported_duplicates: true
 free_admission: false
 page_types:

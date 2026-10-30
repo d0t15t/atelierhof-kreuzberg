@@ -1,5 +1,5 @@
 uuid: 36adabc4-79c3-42d1-8ec5-e0400a50662d
-langcode: en
+langcode: de
 status: true
 dependencies:
   config:
@@ -260,7 +260,7 @@ display:
       path: archive
       menu:
         type: normal
-        title: Archive
+        title: Archiv
         description: null
         weight: 0
         enabled: true

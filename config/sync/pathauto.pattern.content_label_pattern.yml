@@ -5,19 +5,29 @@ dependencies:
   config:
     - node.type.exhibition
   module:
+    - language
     - node
 id: content_label_pattern
-label: 'Content label pattern'
+label: 'Ausstellung (Deutsch)'
 type: 'canonical_entities:node'
-pattern: '/archive/[node:title]'
+pattern: '/archiv/[node:title]'
 selection_criteria:
-  197ddd9c-7d94-481e-b488-4b34c89daa35:
+  05256dfc-7ace-4d86-b7dc-5d103b0df00a:
     id: 'entity_bundle:node'
     negate: false
     context_mapping:
       node: node
     bundles:
       exhibition: exhibition
+  6fcbf96d-33be-4cc8-9c26-38c905ff1499:
+    id: language
+    negate: false
+    context_mapping:
+      language: 'node:langcode:language'
+    langcodes:
+      de: de
 selection_logic: and
 weight: -5
-relationships: {  }
+relationships:
+  'node:langcode:language':
+    label: Language

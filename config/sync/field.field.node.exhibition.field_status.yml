@@ -1,5 +1,5 @@
 uuid: ebfb073a-aa33-4e04-a1dd-623e25d6b020
-langcode: en
+langcode: de
 status: true
 dependencies:
   config:
@@ -13,7 +13,7 @@ bundle: exhibition
 label: Status
 description: 'Optional. Wird als Label angezeigt, wenn die Ausstellung auf der Startseite hervorgehoben ist.'
 required: false
-translatable: true
+translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:

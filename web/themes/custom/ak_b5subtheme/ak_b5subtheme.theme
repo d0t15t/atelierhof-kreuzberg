@@ -35,7 +35,7 @@ function ak_b5subtheme_preprocess_breadcrumb(&$vars) {
   /** @var \Drupal\Core\Path\PathMatcherInterface $path_matcher */
   $path_matcher = \Drupal::service('path.matcher');
   if ($path_matcher->isFrontPage()) {
-    $vars["breadcrumb"][0]["text"] = t('Aktuell');
+    $vars["breadcrumb"][0]["text"] = t('Current', [], ['context' => 'Frontpage breadcrumb']);
   }
 
   /** @var Node $cur_node */
@@ -49,4 +49,35 @@ function ak_b5subtheme_preprocess_breadcrumb(&$vars) {
     }
   }
 
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Shows the language switcher as language codes: DE, EN.
+ */
+function ak_b5subtheme_preprocess_links__language_block(&$vars) {
+  foreach ($vars['links'] as $langcode => &$item) {
+    if (!isset($item['link']['#title'])) {
+      continue;
+    }
+    $attributes = $item['link']['#options']['attributes'] ?? [];
+    if (in_array('is-untranslated', $attributes['class'] ?? [], TRUE)) {
+      // No translation to link to (see ak_theme_language_switch_links_alter()).
+      $item['link'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'span',
+        '#value' => strtoupper($langcode),
+        '#attributes' => [
+          'class' => ['is-untranslated'],
+          'title' => $attributes['title'] ?? '',
+          'lang' => $langcode,
+        ],
+      ];
+      continue;
+    }
+    $item['link']['#title'] = strtoupper($langcode);
+    $item['link']['#options']['attributes']['lang'] = $langcode;
+    $item['link']['#options']['attributes']['hreflang'] = $langcode;
+  }
 }

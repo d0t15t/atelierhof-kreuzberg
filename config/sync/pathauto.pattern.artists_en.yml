@@ -1,0 +1,33 @@
+uuid: 061c77ac-2fa4-46e9-83e6-c4cdae02deb5
+langcode: de
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.tags
+  module:
+    - language
+    - taxonomy
+id: artists_en
+label: 'Artists (English)'
+type: 'canonical_entities:taxonomy_term'
+pattern: '/artists/[term:name]'
+selection_criteria:
+  19be30cd-49d2-4d55-9684-e95835d8357f:
+    id: 'entity_bundle:taxonomy_term'
+    negate: false
+    context_mapping:
+      taxonomy_term: taxonomy_term
+    bundles:
+      tags: tags
+  53b84b62-bdd2-41af-aa5e-2958327e76f3:
+    id: language
+    negate: false
+    context_mapping:
+      language: 'taxonomy_term:langcode:language'
+    langcodes:
+      en: en
+selection_logic: and
+weight: -5
+relationships:
+  'taxonomy_term:langcode:language':
+    label: Language

@@ -1,0 +1,16 @@
+uuid: 0c27bd81-e64d-43d6-b25d-f2600b4880da
+langcode: de
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.exhibition_status
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: taxonomy_term.exhibition_status
+target_entity_type_id: taxonomy_term
+target_bundle: exhibition_status
+default_langcode: site_default
+language_alterable: true

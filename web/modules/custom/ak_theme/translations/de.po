@@ -1,0 +1,21 @@
+# German translation of the Atelierhof Kreuzberg custom code.
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+msgctxt "Frontpage breadcrumb"
+msgid "Current"
+msgstr "Aktuell"
+
+msgid "Filter exhibitions by year"
+msgstr "Ausstellungen nach Jahr filtern"
+
+msgid "Selected: @year"
+msgstr "Ausgewählt: @year"
+
+msgid "Toggle navigation"
+msgstr "Navigation ein-/ausblenden"
+
+msgid "Not available in this language"
+msgstr "In dieser Sprache nicht verfügbar"

@@ -1,5 +1,5 @@
 uuid: b72042a8-ad51-48d4-a3bc-402987a2fba6
-langcode: en
+langcode: de
 status: true
 dependencies:
   config:
@@ -166,3 +166,4 @@ hidden:
   field_tags: true
   field_title: true
   field_upcoming: true
+  langcode: true

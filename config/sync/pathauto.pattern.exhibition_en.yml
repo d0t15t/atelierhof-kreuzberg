@@ -1,0 +1,33 @@
+uuid: e9aec9b7-a3cf-489b-9c55-e0a0e23286c0
+langcode: de
+status: true
+dependencies:
+  config:
+    - node.type.exhibition
+  module:
+    - language
+    - node
+id: exhibition_en
+label: 'Exhibition (English)'
+type: 'canonical_entities:node'
+pattern: '/archive/[node:title]'
+selection_criteria:
+  d0330756-1c0c-4a1a-8392-d91335fba225:
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: node
+    bundles:
+      exhibition: exhibition
+  663d662e-a6b5-48d0-8e45-60495b3bd883:
+    id: language
+    negate: false
+    context_mapping:
+      language: 'node:langcode:language'
+    langcodes:
+      en: en
+selection_logic: and
+weight: -5
+relationships:
+  'node:langcode:language':
+    label: Language

@@ -1,5 +1,5 @@
 uuid: c880a8a7-e200-41c8-87a0-6230c732e2f6
-langcode: en
+langcode: de
 status: true
 dependencies: {  }
 name: 'Exhibition status'

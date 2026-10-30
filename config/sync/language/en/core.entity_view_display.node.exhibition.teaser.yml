@@ -1,0 +1,16 @@
+third_party_settings:
+  layout_builder:
+    sections:
+      -
+        layout_settings:
+          label: '2 col 33/67'
+        components:
+          dea3f074-b48b-49c6-a0c0-816dc256adeb:
+            configuration:
+              label: 'Main image'
+          5b7e6ecd-9e6d-40b7-979e-8e4f2bfd35ae:
+            configuration:
+              label: Body
+          b90a2f0b-a521-45bb-a171-355e44e7c34b:
+            configuration:
+              label: Title

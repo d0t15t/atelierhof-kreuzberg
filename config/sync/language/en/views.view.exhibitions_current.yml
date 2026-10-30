@@ -1,0 +1,11 @@
+label: 'Exhibitions current'
+display:
+  default:
+    display_options:
+      title: 'Exhibitions current'
+  block_default:
+    display_options:
+      title: 'Ongoing <span>Exhibitions</span>'
+  block_upcoming:
+    display_options:
+      title: Upcoming

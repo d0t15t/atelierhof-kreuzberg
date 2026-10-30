@@ -1,0 +1,33 @@
+uuid: e5aac64f-dad8-4a41-a703-47a12c64075f
+langcode: de
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.exhibition_status
+  module:
+    - language
+    - taxonomy
+id: exhibition_status_de
+label: 'Ausstellungsstatus (Deutsch)'
+type: 'canonical_entities:taxonomy_term'
+pattern: '/ausstellungsstatus/[term:name]'
+selection_criteria:
+  9126e54d-890c-4b78-bb7b-a985e0cfa905:
+    id: 'entity_bundle:taxonomy_term'
+    negate: false
+    context_mapping:
+      taxonomy_term: taxonomy_term
+    bundles:
+      exhibition_status: exhibition_status
+  9d08cf06-9422-42a7-b08e-81de97716ef9:
+    id: language
+    negate: false
+    context_mapping:
+      language: 'taxonomy_term:langcode:language'
+    langcodes:
+      de: de
+selection_logic: and
+weight: -5
+relationships:
+  'taxonomy_term:langcode:language':
+    label: Language

@@ -1,5 +1,5 @@
 uuid: 67d170c6-9d5f-45e7-8031-0ea011e8e0b6
-langcode: en
+langcode: de
 status: true
 dependencies:
   content:
@@ -11,7 +11,7 @@ dependencies:
 id: ak_b5subtheme_ak_info
 theme: ak_b5subtheme
 region: sidebar_first
-weight: 0
+weight: -1
 provider: null
 plugin: 'block_content:c29054fe-3f0c-4d79-ae6b-4df7776ff52b'
 settings:
