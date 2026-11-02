@@ -1,0 +1,146 @@
+uuid: 4a724ab4-776f-4869-9c37-0cf3dde15a25
+langcode: de
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.tags
+  module:
+    - taxonomy
+    - user
+id: artists
+label: 'Künstler*innen'
+module: views
+description: 'Alle Künstler*innen aus veröffentlichten Ausstellungen, von A bis Z.'
+tag: ''
+base_table: taxonomy_term_field_data
+base_field: tid
+display:
+  default:
+    id: default
+    display_title: Default
+    display_plugin: default
+    position: 0
+    display_options:
+      title: 'Künstler*innen'
+      fields:
+        initial:
+          id: initial
+          table: taxonomy_term_field_data
+          field: name
+          entity_type: taxonomy_term
+          entity_field: name
+          plugin_id: field
+          label: ''
+          exclude: true
+          alter:
+            alter_text: true
+            text: '{{ initial|slice(0, 1)|upper }}'
+          type: string
+          settings:
+            link_to_entity: false
+        name:
+          id: name
+          table: taxonomy_term_field_data
+          field: name
+          entity_type: taxonomy_term
+          entity_field: name
+          plugin_id: field
+          label: ''
+          type: string
+          settings:
+            link_to_entity: true
+      pager:
+        type: none
+        options:
+          offset: 0
+      access:
+        type: perm
+        options:
+          perm: 'access content'
+      cache:
+        type: tag
+        options: {  }
+      sorts:
+        name:
+          id: name
+          table: taxonomy_term_field_data
+          field: name
+          entity_type: taxonomy_term
+          entity_field: name
+          plugin_id: standard
+          order: ASC
+      filters:
+        vid:
+          id: vid
+          table: taxonomy_term_field_data
+          field: vid
+          entity_type: taxonomy_term
+          entity_field: vid
+          plugin_id: bundle
+          value:
+            tags: tags
+        status:
+          id: status
+          table: taxonomy_term_field_data
+          field: status
+          entity_type: taxonomy_term
+          entity_field: status
+          plugin_id: boolean
+          value: '1'
+        default_langcode:
+          id: default_langcode
+          table: taxonomy_term_field_data
+          field: default_langcode
+          entity_type: taxonomy_term
+          entity_field: default_langcode
+          plugin_id: boolean
+          value: '1'
+        name:
+          id: name
+          table: taxonomy_term_field_data
+          field: name
+          entity_type: taxonomy_term
+          entity_field: name
+          plugin_id: string
+          operator: not_regular_expression
+          value: '^([+]|a[.]o[.]|u[.]a[.]|and others)$'
+      style:
+        type: html_list
+        options:
+          grouping:
+            -
+              field: initial
+              rendered: true
+              rendered_strip: false
+          type: ul
+          wrapper_class: artists-letter
+          class: artists-list
+      row:
+        type: fields
+        options: {  }
+      query:
+        type: views_query
+        options: {  }
+      rendering_language: '***LANGUAGE_language_content***'
+      display_extenders: {  }
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - user.permissions
+      tags: {  }
+  page:
+    id: page
+    display_title: Page
+    display_plugin: page
+    position: 1
+    display_options:
+      display_extenders: {  }
+      path: kuenstler
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - user.permissions
+      tags: {  }

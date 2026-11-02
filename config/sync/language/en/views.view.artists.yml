@@ -1,0 +1,6 @@
+label: Artists
+description: 'All artists from published exhibitions, A to Z.'
+display:
+  default:
+    display_options:
+      title: Artists

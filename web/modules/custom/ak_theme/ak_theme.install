@@ -13,7 +13,9 @@ use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\language\Entity\ContentLanguageSettings;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\pathauto\PathautoState;
+use Drupal\path_alias\Entity\PathAlias;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\views\Entity\View;
 
 /**
  * Translates the site's labels and config strings to German.
@@ -541,5 +543,168 @@ function ak_theme_update_10002(): void {
     $language_manager->getLanguageConfigOverride('en', 'block.block.ak_b5subtheme_languageswitcher')
       ->set('settings.label', 'Language switcher')
       ->save();
+  }
+}
+
+/**
+ * Adds the artists page: an A–Z list at /kuenstler, /en/artists in English.
+ *
+ * Lists the tags of published exhibitions, which are the artists; the
+ * exhibition condition is added in ak_theme_views_query_alter(). Names are
+ * sorted as written; many don't split cleanly into first and last name.
+ */
+function ak_theme_update_10003(): void {
+  if (!View::load('artists')) {
+    $name_field = [
+      'table' => 'taxonomy_term_field_data',
+      'field' => 'name',
+      'entity_type' => 'taxonomy_term',
+      'entity_field' => 'name',
+      'plugin_id' => 'field',
+      'label' => '',
+      'type' => 'string',
+      'settings' => ['link_to_entity' => TRUE],
+    ];
+    View::create([
+      'id' => 'artists',
+      'label' => 'Künstler*innen',
+      'langcode' => 'de',
+      'module' => 'views',
+      'description' => 'Alle Künstler*innen aus veröffentlichten Ausstellungen, von A bis Z.',
+      'tag' => '',
+      'base_table' => 'taxonomy_term_field_data',
+      'base_field' => 'tid',
+      'display' => [
+        'default' => [
+          'id' => 'default',
+          'display_title' => 'Default',
+          'display_plugin' => 'default',
+          'position' => 0,
+          'display_options' => [
+            'title' => 'Künstler*innen',
+            'access' => ['type' => 'perm', 'options' => ['perm' => 'access content']],
+            'cache' => ['type' => 'tag', 'options' => []],
+            'query' => ['type' => 'views_query', 'options' => []],
+            'pager' => ['type' => 'none', 'options' => ['offset' => 0]],
+            'style' => [
+              'type' => 'html_list',
+              'options' => [
+                'grouping' => [['field' => 'initial', 'rendered' => TRUE, 'rendered_strip' => FALSE]],
+                'type' => 'ul',
+                'class' => 'artists-list',
+                'wrapper_class' => 'artists-letter',
+              ],
+            ],
+            'row' => ['type' => 'fields', 'options' => []],
+            'fields' => [
+              // The first letter, for the A–Z headings.
+              'initial' => [
+                'id' => 'initial',
+                'exclude' => TRUE,
+                'settings' => ['link_to_entity' => FALSE],
+                'alter' => ['alter_text' => TRUE, 'text' => '{{ initial|slice(0, 1)|upper }}'],
+              ] + $name_field,
+              'name' => ['id' => 'name'] + $name_field,
+            ],
+            'filters' => [
+              'vid' => [
+                'id' => 'vid',
+                'table' => 'taxonomy_term_field_data',
+                'field' => 'vid',
+                'entity_type' => 'taxonomy_term',
+                'entity_field' => 'vid',
+                'plugin_id' => 'bundle',
+                'value' => ['tags' => 'tags'],
+              ],
+              'status' => [
+                'id' => 'status',
+                'table' => 'taxonomy_term_field_data',
+                'field' => 'status',
+                'entity_type' => 'taxonomy_term',
+                'entity_field' => 'status',
+                'plugin_id' => 'boolean',
+                'value' => '1',
+              ],
+              'default_langcode' => [
+                'id' => 'default_langcode',
+                'table' => 'taxonomy_term_field_data',
+                'field' => 'default_langcode',
+                'entity_type' => 'taxonomy_term',
+                'entity_field' => 'default_langcode',
+                'plugin_id' => 'boolean',
+                'value' => '1',
+              ],
+              // Tags that aren't artists, such as "+" and "and others".
+              'name' => [
+                'id' => 'name',
+                'table' => 'taxonomy_term_field_data',
+                'field' => 'name',
+                'entity_type' => 'taxonomy_term',
+                'entity_field' => 'name',
+                'plugin_id' => 'string',
+                'operator' => 'not_regular_expression',
+                'value' => '^([+]|a[.]o[.]|u[.]a[.]|and others)$',
+              ],
+            ],
+            'sorts' => [
+              'name' => [
+                'id' => 'name',
+                'table' => 'taxonomy_term_field_data',
+                'field' => 'name',
+                'entity_type' => 'taxonomy_term',
+                'entity_field' => 'name',
+                'plugin_id' => 'standard',
+                'order' => 'ASC',
+              ],
+            ],
+            'rendering_language' => '***LANGUAGE_language_content***',
+          ],
+        ],
+        'page' => [
+          'id' => 'page',
+          'display_title' => 'Page',
+          'display_plugin' => 'page',
+          'position' => 1,
+          'display_options' => [
+            'path' => 'kuenstler',
+            'display_extenders' => [],
+          ],
+        ],
+      ],
+    ])->save();
+  }
+  $language_manager = \Drupal::languageManager();
+  $language_manager->getLanguageConfigOverride('en', 'views.view.artists')
+    ->set('label', 'Artists')
+    ->set('description', 'All artists from published exhibitions, A to Z.')
+    ->set('display.default.display_options.title', 'Artists')
+    ->save();
+
+  // English URL. The breadcrumb no longer needs a title for "Kuenstler".
+  $aliases = \Drupal::entityTypeManager()->getStorage('path_alias');
+  if (!$aliases->loadByProperties(['path' => '/kuenstler', 'langcode' => 'en'])) {
+    PathAlias::create(['path' => '/kuenstler', 'alias' => '/artists', 'langcode' => 'en'])->save();
+  }
+  $config_factory = \Drupal::configFactory();
+  $breadcrumb = $config_factory->getEditable('easy_breadcrumb.settings');
+  $breadcrumb->set('replaced_titles', trim(str_replace('Kuenstler::Künstler*innen', '', $breadcrumb->get('replaced_titles'))))->save();
+
+  // Menu: after the archive, before the about page.
+  if (!\Drupal::entityTypeManager()->getStorage('menu_link_content')->loadByProperties(['link__uri' => 'internal:/kuenstler'])) {
+    $link = MenuLinkContent::create([
+      'title' => 'Künstler*innen',
+      'description' => 'Alle Künstler*innen, die im Atelierhof Kreuzberg ausgestellt haben.',
+      'link' => ['uri' => 'internal:/kuenstler'],
+      'menu_name' => 'main',
+      'weight' => -46,
+      'langcode' => 'de',
+      'expanded' => FALSE,
+    ]);
+    $link->save();
+    $link->addTranslation('en', [
+      'title' => 'Artists',
+      'description' => 'All artists who have exhibited at Atelierhof Kreuzberg.',
+    ])->save();
+    MenuLinkContent::load(464)?->set('weight', -45)->save();
   }
 }
