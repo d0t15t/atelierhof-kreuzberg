@@ -13100,6 +13100,41 @@ main .node--view-mode-featured .field--name-field-status, main .node--view-mode-
   text-decoration: underline;
 }
 
+.view-artists .artists-letter {
+  break-inside: avoid;
+  margin-bottom: 1.2rem;
+}
+.view-artists .artists-letter h3, .view-artists .artists-letter .h3 {
+  color: #a6a99d;
+  font-size: medium;
+  margin-bottom: 0.25rem;
+}
+.view-artists .artists-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.view-artists .artists-list a, .view-artists .artists-list a:link, .view-artists .artists-list a:visited {
+  text-decoration: none;
+}
+.view-artists .artists-list a:hover {
+  text-decoration: underline;
+}
+.view-artists .view-content {
+  margin-top: 1rem;
+}
+@media screen and (min-width: 576px) {
+  .view-artists .view-content {
+    columns: 2;
+    column-gap: 2rem;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .view-artists .view-content {
+    columns: 3;
+  }
+}
+
 a, a:link, a:visited {
   color: #081223;
   text-decoration: underline;

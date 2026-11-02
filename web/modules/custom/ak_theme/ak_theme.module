@@ -10,6 +10,8 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\TypedData\TranslatableInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\ViewExecutable;
 
 function ak_theme_theme($existing, $type, $theme, $path) {
   return [
@@ -125,5 +127,17 @@ function ak_theme_preprocess_field__node__field_status(&$vars) {
     if ($term instanceof TranslatableInterface && $term->hasTranslation($langcode) && isset($vars['items'][$delta]['content']['#plain_text'])) {
       $vars['items'][$delta]['content']['#plain_text'] = $term->getTranslation($langcode)->label();
     }
+  }
+}
+
+/**
+ * Implements hook_views_query_alter().
+ *
+ * The artists page lists only tags of published exhibitions. A join would
+ * repeat each artist once per exhibition, so this is a subquery.
+ */
+function ak_theme_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() === 'artists') {
+    $query->addWhereExpression(0, "EXISTS (SELECT 1 FROM {node__field_tags} t INNER JOIN {node_field_data} n ON n.nid = t.entity_id WHERE t.field_tags_target_id = taxonomy_term_field_data.tid AND t.deleted = 0 AND n.status = 1 AND n.type = 'exhibition')");
   }
 }
